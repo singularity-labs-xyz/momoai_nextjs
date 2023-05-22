@@ -116,7 +116,12 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           });
         }
         const controller = new AbortController();
-        const response = await fetch(endpoint, {
+        const messages = updatedConversation.messages
+        body = JSON.stringify({
+          "message": messages[messages.length - 1].content
+        })
+        console.log(messages)
+        const response = await fetch("/api/chain/llm", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -124,6 +129,22 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           signal: controller.signal,
           body,
         });
+        // const response = await fetch("http://127.0.0.1:8000/chain/llm", {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   signal: controller.signal,
+        //   body
+        // });
+        // const response = await fetch(endpoint, {
+        //   method: 'POST',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        //   signal: controller.signal,
+        //   body,
+        // });
         if (!response.ok) {
           homeDispatch({ field: 'loading', value: false });
           homeDispatch({ field: 'messageIsStreaming', value: false });

@@ -23,6 +23,7 @@ import {
 } from '@/utils/app/conversation';
 import { saveFolders } from '@/utils/app/folders';
 import { savePrompts } from '@/utils/app/prompts';
+import { saveDocuments } from '@/utils/app/documents';
 import { getSettings } from '@/utils/app/settings';
 
 import { Conversation } from '@/types/chat';
@@ -30,11 +31,13 @@ import { KeyValuePair } from '@/types/data';
 import { FolderInterface, FolderType } from '@/types/folder';
 import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
+import { Document } from '@/types/document';
 
 import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
 import Promptbar from '@/components/Promptbar';
+import Documentbar from '@/components/Documentbar';
 
 import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
@@ -69,6 +72,7 @@ const Home = ({
       conversations,
       selectedConversation,
       prompts,
+      documents,
       temperature,
     },
     dispatch,
@@ -157,6 +161,20 @@ const Home = ({
 
     dispatch({ field: 'prompts', value: updatedPrompts });
     savePrompts(updatedPrompts);
+
+    const updatedDocuments: Document[] = documents.map((p) => {
+      if (p.folderId === folderId) {
+        return {
+          ...p,
+          folderId: null,
+        };
+      }
+
+      return p;
+    });
+
+    dispatch({ field: 'documents', value: updatedDocuments });
+    saveDocuments(updatedDocuments);
   };
 
   const handleUpdateFolder = (folderId: string, name: string) => {
@@ -280,6 +298,7 @@ const Home = ({
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
       dispatch({ field: 'showPromptbar', value: false });
+      dispatch({ field: 'showDocumentbar', value: false });
     }
 
     const showChatbar = localStorage.getItem('showChatbar');
@@ -292,6 +311,11 @@ const Home = ({
       dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
     }
 
+    const showDocumentbar = localStorage.getItem('showDocumentbar');
+    if (showDocumentbar) {
+      dispatch({ field: 'showDocumentbar', value: showDocumentbar === 'true' });
+    }
+
     const folders = localStorage.getItem('folders');
     if (folders) {
       dispatch({ field: 'folders', value: JSON.parse(folders) });
@@ -300,6 +324,12 @@ const Home = ({
     const prompts = localStorage.getItem('prompts');
     if (prompts) {
       dispatch({ field: 'prompts', value: JSON.parse(prompts) });
+    }
+
+    /* fetch from mongo */
+    const documents = localStorage.getItem('documents');
+    if (documents) {
+      dispatch({ field: 'documents', value: JSON.parse(documents) });
     }
 
     const conversationHistory = localStorage.getItem('conversationHistory');
@@ -380,7 +410,7 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Chatbar />
+            <Documentbar/>
 
             <div className="flex flex-1">
               <Chat stopConversationRef={stopConversationRef} />
