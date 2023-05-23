@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
-import HomeContext from '@/pages/api/home/home.context';
+import HomeContext from '@/pages/home/home.context';
 
 import { SettingDialog } from '@/components/Settings/SettingDialog';
 
@@ -35,9 +35,8 @@ export const ChatbarSettings = () => {
     handleExportData,
     handleApiKeyChange,
   } = useContext(ChatbarContext);
-
   return (
-    <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-1 text-sm">
+    <div className="flex flex-col items-center space-y-1 border-t border-light-border dark:border-dark-border pt-1 text-sm text-red-500">
       {conversations.length > 0 ? (
         <ClearConversations onClearConversations={handleClearConversations} />
       ) : null}
