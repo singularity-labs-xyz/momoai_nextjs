@@ -116,7 +116,7 @@ const Home = ({
 
   // FOLDER OPERATIONS  --------------------------------------------
 
-  const handleCreateFolder = (name: string, type: FolderType) => {
+  const handleCreateFolder = (name: string, type: FolderType, parentFolderId?: string) => {
     const newFolder: FolderInterface = {
       id: uuidv4(),
       name,
@@ -410,13 +410,14 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Documentbar/>
+            <Chatbar />
+            {/* <Documentbar/> */}
 
             <div className="flex flex-1">
               <Chat stopConversationRef={stopConversationRef} />
             </div>
 
-            <Chatbar />
+            <Promptbar />
           </div>
         </main>
       )}
