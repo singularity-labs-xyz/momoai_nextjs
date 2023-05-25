@@ -37,6 +37,7 @@ import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
 import Promptbar from '@/components/Promptbar';
+import PDFViewer from '@/components/PDFViewer/PDFViewer';
 // import Documentbar from '@/components/Documentbar';
 
 import HomeContext from './home.context';
@@ -234,6 +235,7 @@ const Home = ({
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
+      documentUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // New property with null value
     };
 
     const updatedConversations = [...conversations, newConversation];
@@ -433,7 +435,10 @@ const Home = ({
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
             <Chatbar />
-            {/* <Documentbar/> */}
+
+            {selectedConversation.documentUrl && (
+              <PDFViewer url={selectedConversation.documentUrl} />
+            )}
 
             <div className="flex flex-1">
               <Chat stopConversationRef={stopConversationRef} />
