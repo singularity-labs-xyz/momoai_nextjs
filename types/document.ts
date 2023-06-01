@@ -5,6 +5,5 @@ export interface Document {
   name: string;
   description: string;
   content: string;
-  model: OpenAIModel;
   folderId: string | null;
 }

@@ -43,6 +43,7 @@ import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
 
 import { v4 as uuidv4 } from 'uuid';
+import DocumentViewer from '@/components/DocumentViewer';
 
 interface Props {
   serverSideApiKeyIsSet: boolean;
@@ -243,6 +244,15 @@ const Home = ({
     dispatch({ field: 'conversations', value: all });
   };
 
+  // DOCUMENT OPERATIONS  --------------------------------------------
+
+  const handleSelectDocument = (document: Document) => {
+    dispatch({
+      field: 'selectedDocument',
+      value: document,
+    });
+  };
+
   // EFFECTS  --------------------------------------------
 
   useEffect(() => {
@@ -387,6 +397,7 @@ const Home = ({
         handleUpdateFolder,
         handleSelectConversation,
         handleUpdateConversation,
+        handleSelectDocument,
       }}
     >
       <Head>
@@ -410,9 +421,10 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Documentbar/>
+              <Documentbar/>
 
-            <div className="flex flex-1">
+            <div className="flex flex-1 flex-row">
+              <DocumentViewer/>
               <Chat stopConversationRef={stopConversationRef} />
             </div>
 

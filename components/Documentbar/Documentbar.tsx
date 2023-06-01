@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCreateReducer } from '@/hooks/useCreateReducer';
@@ -43,22 +43,48 @@ const Documentbar = () => {
     localStorage.setItem('showDocumentbar', JSON.stringify(!showDocumentbar));
   };
 
-  const handleCreateDocument = () => {
-    if (defaultModelId) {
-      const newDocument: Document = {
-        id: uuidv4(),
-        name: `Document ${documents.length + 1}`,
-        description: '',
-        content: '',
-        model: OpenAIModels[defaultModelId],
-        folderId: null,
-      };
+  const handleCreateDocument = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] as File | undefined;
+    console.log(file)
+    if(file) {
+      const formData = new FormData();
+      const user_id = uuidv4()
+      const document_id = uuidv4()
+      formData.append('file', file);
+      formData.append('user_id', user_id);
+      formData.append('document_id', document_id);
 
-      const updatedDocuments = [...documents, newDocument];
+      const response = await fetch(`http://127.0.0.1:8000/user/upload`, {
+          method: 'POST',
+          body: formData
+        });
 
-      homeDispatch({ field: 'documents', value: updatedDocuments });
 
-      saveDocuments(updatedDocuments);
+      if (response.ok) {
+        const newDocument: Document = {
+          id: uuidv4(),
+          name: file.name,
+          description: '',
+          content:`/${file.name}`,
+          folderId: null,
+        };
+        
+        const updatedDocuments = [...documents, newDocument];
+    
+        homeDispatch({ field: 'documents', value: updatedDocuments });
+    
+        saveDocuments(updatedDocuments);
+        console.log('File uploaded successfully!');
+      } else {
+        console.error('Error uploading file:', response.statusText);
+      }
+
+      //   } else {
+      //     console.error('Error uploading file:', response.statusText);
+      //   }
+      // } catch (error) {
+      //   console.error('Error uploading file:', error);
+      // }
     }
   };
 
@@ -125,10 +151,12 @@ const Documentbar = () => {
         handleUpdateDocument,
       }}
     >
+      <div className='relative h-screen'>
+      <input id="upload-document" className="sr-only" type="file" accept=".pdf" onChange={handleCreateDocument} />
       <Sidebar<Document>
         side={'left'}
         isOpen={showDocumentbar}
-        addItemButtonTitle={t('New document')}
+        addItemButtonTitle={t('Upload document')}
         itemComponent={
           <Documents
             documents={filteredDocuments.filter((document) => !document.folderId)}
@@ -141,10 +169,18 @@ const Documentbar = () => {
           documentDispatch({ field: 'searchTerm', value: searchTerm })
         }
         toggleOpen={handleToggleDocumentbar}
-        handleCreateItem={handleCreateDocument}
+        handleCreateItem={() => {
+          const uploadDocument = document.querySelector(
+            '#upload-document',
+          ) as HTMLInputElement;
+          if (uploadDocument) {
+            uploadDocument.click();
+          }
+        }}
         handleCreateFolder={() => handleCreateFolder(t('New folder'), 'document')}
         handleDrop={handleDrop}
       />
+      </div>
     </DocumentbarContext.Provider>
   );
 };

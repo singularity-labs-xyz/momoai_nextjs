@@ -3,6 +3,7 @@ import { Dispatch, createContext } from 'react';
 import { ActionType } from '@/hooks/useCreateReducer';
 
 import { Conversation } from '@/types/chat';
+import { Document } from '@/types/document';
 import { KeyValuePair } from '@/types/data';
 import { FolderType } from '@/types/folder';
 
@@ -20,6 +21,7 @@ export interface HomeContextProps {
     conversation: Conversation,
     data: KeyValuePair,
   ) => void;
+  handleSelectDocument: (document: Document) => void;
 }
 
 const HomeContext = createContext<HomeContextProps>(undefined!);
