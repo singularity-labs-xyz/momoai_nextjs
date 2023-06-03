@@ -37,7 +37,6 @@ import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
 import Promptbar from '@/components/Promptbar';
-import PDFViewer from '@/components/PDFViewer/PDFViewer';
 // import Documentbar from '@/components/Documentbar';
 
 import HomeContext from './home.context';
@@ -219,7 +218,39 @@ const Home = ({
 
   // CONVERSATION OPERATIONS  --------------------------------------------
 
-  const handleNewConversation = () => {
+  const handleDocumentUpload = (): Promise<string> => {
+    return new Promise<string>((resolve, reject) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'application/pdf'; // Adjust according to your needs
+  
+      input.onchange = async (event) => {
+        const file = (event.target as HTMLInputElement).files![0];
+  
+        // Implement your own logic to upload the file to your backend
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        try {
+          // const response = await fetch('/your-backend-endpoint', { // Update this to your actual backend endpoint
+          //   method: 'POST',
+          //   body: formData,
+          // });
+  
+          // const data = await response.json();
+          const data = { url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' };
+          resolve(data.url); // The URL of the uploaded file
+        } catch (error) {
+          reject(error);
+        }
+      };
+  
+      input.click();
+    });
+  };
+
+  const handleNewConversation = async () => {
+    const documentUrl = await handleDocumentUpload();
     const lastConversation = conversations[conversations.length - 1];
 
     const newConversation: Conversation = {
@@ -235,7 +266,7 @@ const Home = ({
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
-      documentUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', // New property with null value
+      documentUrl, // Assign the uploaded document to the new conversation
     };
 
     const updatedConversations = [...conversations, newConversation];
@@ -437,7 +468,7 @@ const Home = ({
             <Chatbar />
 
             {selectedConversation.documentUrl && (
-              <PDFViewer url={selectedConversation.documentUrl} />
+              <iframe src={selectedConversation.documentUrl} width="40%" height="100%" />
             )}
 
             <div className="flex flex-1">
