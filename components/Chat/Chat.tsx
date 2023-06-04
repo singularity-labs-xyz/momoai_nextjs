@@ -122,7 +122,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           "message": messages[messages.length - 1].content
         })
         console.log(messages)
-        const response = await fetch("/api/chain/llm", {
+        const response = await fetch("/api/chains/llm", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
