@@ -48,24 +48,26 @@ const Documentbar = () => {
     console.log(file)
     if(file) {
       const formData = new FormData();
-      const user_id = uuidv4()
+      // HARD CODED USER ID
+      const user_id = "1" // change
       const document_id = uuidv4()
       formData.append('file', file);
       formData.append('user_id', user_id);
       formData.append('document_id', document_id);
 
-      const response = await fetch(`http://127.0.0.1:8000/user/upload`, {
+      // TODO: figure out why routing through api doesnt work (currently hits backend directly)
+      const response = await fetch(`http://127.0.0.1:8000/documents/upload`, {
           method: 'POST',
           body: formData
         });
 
-
       if (response.ok) {
+        const responseData = await response.json();
         const newDocument: Document = {
-          id: uuidv4(),
+          id: document_id,
           name: file.name,
           description: '',
-          content:`/${file.name}`,
+          content: responseData.url,
           folderId: null,
         };
         

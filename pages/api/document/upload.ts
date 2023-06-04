@@ -32,6 +32,8 @@ export default async function uploadHandler(
           return reject(new Error('No file provided'));
         }
 
+        console.log(fields)
+
         await uploadDocument(file);
 
         res.status(200).json({ message: 'File uploaded successfully' });

@@ -2,26 +2,26 @@ import { FC, KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from 'next-i18next';
 
-import { Prompt } from '@/types/prompt';
+import { Document } from '@/types/document';
 
 interface Props {
-  prompt: Prompt;
+  document: Document;
   onClose: () => void;
-  onUpdatePrompt: (prompt: Prompt) => void;
+  onUpdateDocument: (document: Document) => void;
 }
 
-export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
-  const { t } = useTranslation('promptbar');
-  const [name, setName] = useState(prompt.name);
-  const [description, setDescription] = useState(prompt.description);
-  const [content, setContent] = useState(prompt.content);
+export const DocumentModal: FC<Props> = ({ document, onClose, onUpdateDocument }) => {
+  const { t } = useTranslation('documentbar');
+  const [name, setName] = useState(document.name);
+  const [description, setDescription] = useState(document.description);
+  const [content, setContent] = useState(document.content);
 
   const modalRef = useRef<HTMLDivElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   const handleEnter = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      onUpdatePrompt({ ...prompt, name, description, content: content.trim() });
+      onUpdateDocument({ ...document, name, description, content: content.trim() });
       onClose();
     }
   };
@@ -72,7 +72,7 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
             <input
               ref={nameInputRef}
               className="mt-2 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-[#40414F] dark:text-neutral-100"
-              placeholder={t('A name for your prompt.') || ''}
+              placeholder={t('A name for your document.') || ''}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -83,21 +83,21 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
             <textarea
               className="mt-2 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-[#40414F] dark:text-neutral-100"
               style={{ resize: 'none' }}
-              placeholder={t('A description for your prompt.') || ''}
+              placeholder={t('A description for your document.') || ''}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
             />
 
             <div className="mt-6 text-sm font-bold text-black dark:text-neutral-200">
-              {t('Prompt')}
+              {t('Document')}
             </div>
             <textarea
               className="mt-2 w-full rounded-lg border border-neutral-500 px-4 py-2 text-neutral-900 shadow focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-[#40414F] dark:text-neutral-100"
               style={{ resize: 'none' }}
               placeholder={
                 t(
-                  'Prompt content. Use {{}} to denote a variable. Ex: {{name}} is a {{adjective}} {{noun}}',
+                  'Document content. Use {{}} to denote a variable. Ex: {{name}} is a {{adjective}} {{noun}}',
                 ) || ''
               }
               value={content}
@@ -109,14 +109,14 @@ export const PromptModal: FC<Props> = ({ prompt, onClose, onUpdatePrompt }) => {
               type="button"
               className="w-full px-4 py-2 mt-6 border rounded-lg shadow border-neutral-500 text-neutral-900 hover:bg-neutral-100 focus:outline-none dark:border-neutral-800 dark:border-opacity-50 dark:bg-white dark:text-black dark:hover:bg-neutral-300"
               onClick={() => {
-                const updatedPrompt = {
-                  ...prompt,
+                const updatedDocument = {
+                  ...document,
                   name,
                   description,
                   content: content.trim(),
                 };
 
-                onUpdatePrompt(updatedPrompt);
+                onUpdateDocument(updatedDocument);
                 onClose();
               }}
             >

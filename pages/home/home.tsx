@@ -72,6 +72,7 @@ const Home = ({
       folders,
       conversations,
       selectedConversation,
+      selectedDocument,
       prompts,
       documents,
       temperature,
@@ -197,7 +198,8 @@ const Home = ({
 
   // CONVERSATION OPERATIONS  --------------------------------------------
 
-  const handleNewConversation = () => {
+  // TODO: figure out if document should be passed in here or not
+  const handleNewConversation = (document?: Document) => {
     const lastConversation = conversations[conversations.length - 1];
 
     const newConversation: Conversation = {
@@ -213,6 +215,7 @@ const Home = ({
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
+      documentId: document?.id || null,
     };
 
     const updatedConversations = [...conversations, newConversation];
@@ -247,6 +250,11 @@ const Home = ({
   // DOCUMENT OPERATIONS  --------------------------------------------
 
   const handleSelectDocument = (document: Document) => {
+    // TODO: finalize logic for creating new conversations from documents
+    // TODO: Figure out loading while embeddings are being generated
+    console.log(document)
+    handleNewConversation(document);
+    console.log(selectedConversation)
     dispatch({
       field: 'selectedDocument',
       value: document,

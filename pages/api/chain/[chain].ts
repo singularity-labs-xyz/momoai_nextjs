@@ -16,15 +16,19 @@ export const config = {
 };
 
 interface Message {
+    user_id: string,
+    document_ids: string[],
     message: string
 }
+
+// NOTE: We might want to have separate endpoints for each chain bc they take in different params
 
 const handler = async (req: Request): Promise<Response> => {
   try {
     console.log("request query" + req.url)
     const { chain } = parse(req.url, true).query;
     console.log(chain)
-    const { message } = (await req.json()) as Message;
+    const { user_id, document_ids, message } = (await req.json()) as Message;
 
     // await init((imports) => WebAssembly.instantiate(wasm, imports));
     // const encoding = new Tiktoken(
@@ -63,9 +67,9 @@ const handler = async (req: Request): Promise<Response> => {
 
     //const stream = await OpenAIStream(model, promptToSend, temperatureToUse, key, messagesToSend);
 
-    const body = JSON.stringify({ message })
+    const body = JSON.stringify({ user_id, document_ids, message })
 
-    const response = await fetch(`http://127.0.0.1:8000/chain/${chain}`, {
+    const response = await fetch(`http://127.0.0.1:8000/chains/${chain}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
