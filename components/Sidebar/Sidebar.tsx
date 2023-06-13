@@ -1,4 +1,4 @@
-import { IconFolderPlus, IconMistOff, IconPlus, IconLink } from '@tabler/icons-react';
+import { IconFolderPlus, IconMistOff, IconPlus } from '@tabler/icons-react';
 import { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -69,7 +69,6 @@ const Sidebar = <T,>({
           >
             <IconPlus size={16} />
             {addItemButtonTitle}
-            {/* <IconLink size={16} /> */}
           </button>
 
           <button

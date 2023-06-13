@@ -31,13 +31,13 @@ import { KeyValuePair } from '@/types/data';
 import { FolderInterface, FolderType } from '@/types/folder';
 import { OpenAIModelID, OpenAIModels, fallbackModelID } from '@/types/openai';
 import { Prompt } from '@/types/prompt';
-// import { Document } from '@/types/document';
+import { Document } from '@/types/document';
 
 import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
 import Promptbar from '@/components/Promptbar';
-// import Documentbar from '@/components/Documentbar';
+import Documentbar from '@/components/Documentbar';
 
 import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
@@ -72,7 +72,7 @@ const Home = ({
       conversations,
       selectedConversation,
       prompts,
-      // documents,
+      documents,
       temperature,
     },
     dispatch,
@@ -116,12 +116,11 @@ const Home = ({
 
   // FOLDER OPERATIONS  --------------------------------------------
 
-  const handleCreateFolder = (name: string, type: FolderType, parentFolderId: string | null = null) => {
+  const handleCreateFolder = (name: string, type: FolderType) => {
     const newFolder: FolderInterface = {
       id: uuidv4(),
       name,
       type,
-      parentFolderId,
     };
 
     const updatedFolders = [...folders, newFolder];
@@ -130,73 +129,52 @@ const Home = ({
     saveFolders(updatedFolders);
   };
 
-  // const handleDeleteFolder = (folderId: string) => {
-  //   const updatedFolders = folders.filter((f) => f.id !== folderId);
-  //   dispatch({ field: 'folders', value: updatedFolders });
-  //   saveFolders(updatedFolders);
-
-  //   const updatedConversations: Conversation[] = conversations.map((c) => {
-  //     if (c.folderId === folderId) {
-  //       return {
-  //         ...c,
-  //         folderId: null,
-  //       };
-  //     }
-
-  //     return c;
-  //   });
-
-  //   dispatch({ field: 'conversations', value: updatedConversations });
-  //   saveConversations(updatedConversations);
-
-  //   const updatedPrompts: Prompt[] = prompts.map((p) => {
-  //     if (p.folderId === folderId) {
-  //       return {
-  //         ...p,
-  //         folderId: null,
-  //       };
-  //     }
-
-  //     return p;
-  //   });
-
-  //   dispatch({ field: 'prompts', value: updatedPrompts });
-  //   savePrompts(updatedPrompts);
-  // };
-
   const handleDeleteFolder = (folderId: string) => {
-    // Get all subfolders recursively
-    const getAllSubfolders = (id: string): string[] => {
-      let subfolders = folders.filter(f => f.parentFolderId === id).map(f => f.id);
-      for (let subfolderId of subfolders) {
-        subfolders = [...subfolders, ...getAllSubfolders(subfolderId)];
-      }
-      return subfolders;
-    };
-
-    const foldersToDelete = [folderId, ...getAllSubfolders(folderId)];
-
-    const updatedFolders = folders.filter(f => !foldersToDelete.includes(f.id));
+    const updatedFolders = folders.filter((f) => f.id !== folderId);
     dispatch({ field: 'folders', value: updatedFolders });
     saveFolders(updatedFolders);
 
-    // Delete conversations, prompts and documents of the deleted folders
-    const updateItems = (items: any[], saveItems: (items: any[]) => void) => {
-      const updatedItems = items.map(item => {
-        if (foldersToDelete.includes(item.folderId)) {
-          return { ...item, folderId: null };
-        }
-        return item;
-      });
-      if (items.length > 0) {
-        dispatch({ field: items[0].type, value: updatedItems });
+    const updatedConversations: Conversation[] = conversations.map((c) => {
+      if (c.folderId === folderId) {
+        return {
+          ...c,
+          folderId: null,
+        };
       }
-      saveItems(updatedItems);
-    }
 
-    updateItems(conversations, saveConversations);
-    updateItems(prompts, savePrompts);
-    // updateItems(documents, saveDocuments);
+      return c;
+    });
+
+    dispatch({ field: 'conversations', value: updatedConversations });
+    saveConversations(updatedConversations);
+
+    const updatedPrompts: Prompt[] = prompts.map((p) => {
+      if (p.folderId === folderId) {
+        return {
+          ...p,
+          folderId: null,
+        };
+      }
+
+      return p;
+    });
+
+    dispatch({ field: 'prompts', value: updatedPrompts });
+    savePrompts(updatedPrompts);
+
+    const updatedDocuments: Document[] = documents.map((p) => {
+      if (p.folderId === folderId) {
+        return {
+          ...p,
+          folderId: null,
+        };
+      }
+
+      return p;
+    });
+
+    dispatch({ field: 'documents', value: updatedDocuments });
+    saveDocuments(updatedDocuments);
   };
 
   const handleUpdateFolder = (folderId: string, name: string) => {
@@ -218,39 +196,7 @@ const Home = ({
 
   // CONVERSATION OPERATIONS  --------------------------------------------
 
-  const handleDocumentUpload = (): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/pdf'; // Adjust according to your needs
-  
-      input.onchange = async (event) => {
-        const file = (event.target as HTMLInputElement).files![0];
-  
-        // Implement your own logic to upload the file to your backend
-        const formData = new FormData();
-        formData.append('file', file);
-  
-        try {
-          // const response = await fetch('/your-backend-endpoint', { // Update this to your actual backend endpoint
-          //   method: 'POST',
-          //   body: formData,
-          // });
-  
-          // const data = await response.json();
-          const data = { url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' };
-          resolve(data.url); // The URL of the uploaded file
-        } catch (error) {
-          reject(error);
-        }
-      };
-  
-      input.click();
-    });
-  };
-
-  const handleNewConversation = async () => {
-    const documentUrl = await handleDocumentUpload();
+  const handleNewConversation = () => {
     const lastConversation = conversations[conversations.length - 1];
 
     const newConversation: Conversation = {
@@ -266,7 +212,6 @@ const Home = ({
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
-      documentUrl, // Assign the uploaded document to the new conversation
     };
 
     const updatedConversations = [...conversations, newConversation];
@@ -353,7 +298,7 @@ const Home = ({
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
       dispatch({ field: 'showPromptbar', value: false });
-      // dispatch({ field: 'showDocumentbar', value: false });
+      dispatch({ field: 'showDocumentbar', value: false });
     }
 
     const showChatbar = localStorage.getItem('showChatbar');
@@ -366,10 +311,10 @@ const Home = ({
       dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
     }
 
-    // const showDocumentbar = localStorage.getItem('showDocumentbar');
-    // if (showDocumentbar) {
-    //   dispatch({ field: 'showDocumentbar', value: showDocumentbar === 'true' });
-    // }
+    const showDocumentbar = localStorage.getItem('showDocumentbar');
+    if (showDocumentbar) {
+      dispatch({ field: 'showDocumentbar', value: showDocumentbar === 'true' });
+    }
 
     const folders = localStorage.getItem('folders');
     if (folders) {
@@ -381,11 +326,11 @@ const Home = ({
       dispatch({ field: 'prompts', value: JSON.parse(prompts) });
     }
 
-    // fetch from mongo
-    // const documents = localStorage.getItem('documents');
-    // if (documents) {
-    //   dispatch({ field: 'documents', value: JSON.parse(documents) });
-    // }
+    /* fetch from mongo */
+    const documents = localStorage.getItem('documents');
+    if (documents) {
+      dispatch({ field: 'documents', value: JSON.parse(documents) });
+    }
 
     const conversationHistory = localStorage.getItem('conversationHistory');
     if (conversationHistory) {
@@ -465,17 +410,13 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Chatbar />
-
-            {selectedConversation.documentUrl && (
-              <iframe src={selectedConversation.documentUrl} width="40%" height="100%" />
-            )}
+            <Documentbar/>
 
             <div className="flex flex-1">
               <Chat stopConversationRef={stopConversationRef} />
             </div>
 
-            <Promptbar />
+            <Chatbar />
           </div>
         </main>
       )}
