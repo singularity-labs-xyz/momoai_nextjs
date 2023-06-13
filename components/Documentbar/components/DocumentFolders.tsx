@@ -39,9 +39,7 @@ export const DocumentFolders = () => {
         if (document.folderId === currentFolder.id) {
           return (
             <div key={index} className="ml-5 gap-2 border-l pl-2">
-              <div>Homework</div>
               <DocumentComponent document={document} />
-              <div>Lecture</div>
             </div>
           );
         }
