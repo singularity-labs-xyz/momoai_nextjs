@@ -1,4 +1,4 @@
-import { Dispatch, createContext } from 'react';
+import { ChangeEvent, Dispatch, createContext } from 'react';
 
 import { ActionType } from '@/hooks/useCreateReducer';
 
@@ -9,7 +9,7 @@ import { DocumentbarInitialState } from './Documentbar.state';
 export interface DocumentbarContextProps {
   state: DocumentbarInitialState;
   dispatch: Dispatch<ActionType<DocumentbarInitialState>>;
-  handleCreateDocument: () => void;
+  handleCreateDocument: (event: ChangeEvent<HTMLInputElement>) => void;
   handleDeleteDocument: (document: Document) => void;
   handleUpdateDocument: (document: Document) => void;
 }

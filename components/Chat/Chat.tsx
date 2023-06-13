@@ -117,11 +117,14 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
         }
         const controller = new AbortController();
         const messages = updatedConversation.messages
+        console.log(selectedConversation.documentId)
         body = JSON.stringify({
+          "user_id": "1",
+          "document_ids": [selectedConversation.documentId],
           "message": messages[messages.length - 1].content
         })
         console.log(messages)
-        const response = await fetch("/api/chain/llm", {
+        const response = await fetch("/api/chain/cr", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

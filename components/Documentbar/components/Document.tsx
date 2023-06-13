@@ -18,12 +18,18 @@ import SidebarActionButton from '@/components/Buttons/SidebarActionButton';
 
 import DocumentbarContext from '../Documentbar.context';
 import { DocumentModal } from './DocumentModal';
+import HomeContext from '@/pages/home/home.context';
 
 interface Props {
   document: Document;
 }
 
 export const DocumentComponent = ({ document }: Props) => {
+  const {
+    state: { selectedDocument },
+    handleSelectDocument,
+  } = useContext(HomeContext);
+  
   const {
     dispatch: documentDispatch,
     handleUpdateDocument,
@@ -44,6 +50,9 @@ export const DocumentComponent = ({ document }: Props) => {
     e.stopPropagation();
 
     if (isDeleting) {
+      if (selectedDocument?.id === document.id) {
+        handleSelectDocument(undefined!);
+      }
       handleDeleteDocument(document);
       documentDispatch({ field: 'searchTerm', value: '' });
     }
@@ -78,11 +87,17 @@ export const DocumentComponent = ({ document }: Props) => {
   return (
     <div className="relative flex items-center">
       <button
-        className="flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90"
+        className={`flex w-full cursor-pointer items-center gap-3 rounded-lg p-3 text-sm transition-colors duration-200 hover:bg-[#343541]/90 ${
+          selectedDocument?.id === document.id
+            ? 'bg-[#343541]/90'
+            : ''
+        }`}
         draggable="true"
         onClick={(e) => {
-          e.stopPropagation();
-          setShowModal(true);
+          console.log(document)
+          handleSelectDocument(document);
+          // e.stopPropagation();
+          // setShowModal(true);
         }}
         onDragStart={(e) => handleDragStart(e, document)}
         onMouseLeave={() => {

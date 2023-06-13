@@ -43,6 +43,7 @@ import HomeContext from './home.context';
 import { HomeInitialState, initialState } from './home.state';
 
 import { v4 as uuidv4 } from 'uuid';
+import DocumentViewer from '@/components/DocumentViewer';
 
 interface Props {
   serverSideApiKeyIsSet: boolean;
@@ -71,6 +72,7 @@ const Home = ({
       folders,
       conversations,
       selectedConversation,
+      selectedDocument,
       prompts,
       documents,
       temperature,
@@ -196,7 +198,8 @@ const Home = ({
 
   // CONVERSATION OPERATIONS  --------------------------------------------
 
-  const handleNewConversation = () => {
+  // TODO: figure out if document should be passed in here or not
+  const handleNewConversation = (document?: Document) => {
     const lastConversation = conversations[conversations.length - 1];
 
     const newConversation: Conversation = {
@@ -212,6 +215,7 @@ const Home = ({
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
+      documentId: document?.id || null,
     };
 
     const updatedConversations = [...conversations, newConversation];
@@ -241,6 +245,20 @@ const Home = ({
 
     dispatch({ field: 'selectedConversation', value: single });
     dispatch({ field: 'conversations', value: all });
+  };
+
+  // DOCUMENT OPERATIONS  --------------------------------------------
+
+  const handleSelectDocument = (document: Document) => {
+    // TODO: finalize logic for creating new conversations from documents
+    // TODO: Figure out loading while embeddings are being generated
+    console.log(document)
+    handleNewConversation(document);
+    console.log(selectedConversation)
+    dispatch({
+      field: 'selectedDocument',
+      value: document,
+    });
   };
 
   // EFFECTS  --------------------------------------------
@@ -387,6 +405,7 @@ const Home = ({
         handleUpdateFolder,
         handleSelectConversation,
         handleUpdateConversation,
+        handleSelectDocument,
       }}
     >
       <Head>
@@ -410,9 +429,10 @@ const Home = ({
           </div>
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
-            <Documentbar/>
+              <Documentbar/>
 
-            <div className="flex flex-1">
+            <div className="flex flex-1 flex-row">
+              <DocumentViewer/>
               <Chat stopConversationRef={stopConversationRef} />
             </div>
 

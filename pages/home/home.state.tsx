@@ -5,6 +5,7 @@ import { OpenAIModel, OpenAIModelID } from '@/types/openai';
 import { PluginKey } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 import { Document } from '@/types/document';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface HomeInitialState {
   apiKey: string;
@@ -20,6 +21,7 @@ export interface HomeInitialState {
   currentMessage: Message | undefined;
   prompts: Prompt[];
   documents: Document[];
+  selectedDocument: Document | undefined;
   temperature: number;
   showChatbar: boolean;
   showPromptbar: boolean;
@@ -46,6 +48,7 @@ export const initialState: HomeInitialState = {
   currentMessage: undefined,
   prompts: [],
   documents: [],
+  selectedDocument: undefined,
   temperature: 1,
   showPromptbar: true,
   showChatbar: true,
