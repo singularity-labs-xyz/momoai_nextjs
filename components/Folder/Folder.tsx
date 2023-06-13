@@ -5,7 +5,6 @@ import {
   IconPencil,
   IconTrash,
   IconX,
-  IconPlus
 } from '@tabler/icons-react';
 import {
   KeyboardEvent,
@@ -34,16 +33,12 @@ const Folder = ({
   handleDrop,
   folderComponent,
 }: Props) => {
-  const { handleDeleteFolder, handleUpdateFolder, handleCreateFolder } = useContext(HomeContext);
+  const { handleDeleteFolder, handleUpdateFolder } = useContext(HomeContext);
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleCreateSubfolder = () => {
-    handleCreateFolder('New subfolder', 'chat', currentFolder.id);
-  };
 
   const handleEnterDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
@@ -184,14 +179,6 @@ const Folder = ({
               }}
             >
               <IconTrash size={18} />
-            </SidebarActionButton>
-            <SidebarActionButton
-              handleClick={(e) => {
-                e.stopPropagation();
-                handleCreateSubfolder();
-              }}
-            >
-              <IconPlus size={18} />
             </SidebarActionButton>
           </div>
         )}

@@ -65,7 +65,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const body = JSON.stringify({ message })
 
-    const response = await fetch(`http://127.0.0.1:8000/chains/${chain}`, {
+    const response = await fetch(`http://127.0.0.1:8000/chain/${chain}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
