@@ -1,4 +1,5 @@
 import { OpenAIModel } from './openai';
+import { Conversation } from './chat';
 
 export interface Document {
   id: string;
