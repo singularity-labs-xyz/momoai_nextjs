@@ -74,7 +74,7 @@ const Home = ({
       selectedConversation,
       selectedDocument,
       prompts,
-      // documents,
+      documents,
       temperature,
     },
     dispatch,
@@ -198,7 +198,7 @@ const Home = ({
 
     updateItems(conversations, saveConversations);
     updateItems(prompts, savePrompts);
-    // updateItems(documents, saveDocuments);
+    updateItems(documents, saveDocuments);
   };
 
   const handleUpdateFolder = (folderId: string, name: string) => {
@@ -220,39 +220,39 @@ const Home = ({
 
   // CONVERSATION OPERATIONS  --------------------------------------------
 
-  const handleDocumentUpload = (): Promise<string> => {
-    return new Promise<string>((resolve, reject) => {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'application/pdf'; // Adjust according to your needs
+  // const handleDocumentUpload = (): Promise<string> => {
+  //   return new Promise<string>((resolve, reject) => {
+  //     const input = document.createElement('input');
+  //     input.type = 'file';
+  //     input.accept = 'application/pdf'; // Adjust according to your needs
   
-      input.onchange = async (event) => {
-        const file = (event.target as HTMLInputElement).files![0];
+  //     input.onchange = async (event) => {
+  //       const file = (event.target as HTMLInputElement).files![0];
   
-        // Implement your own logic to upload the file to your backend
-        const formData = new FormData();
-        formData.append('file', file);
+  //       // Implement your own logic to upload the file to your backend
+  //       const formData = new FormData();
+  //       formData.append('file', file);
   
-        try {
-          // const response = await fetch('/your-backend-endpoint', { // Update this to your actual backend endpoint
-          //   method: 'POST',
-          //   body: formData,
-          // });
+  //       try {
+  //         // const response = await fetch('/your-backend-endpoint', { // Update this to your actual backend endpoint
+  //         //   method: 'POST',
+  //         //   body: formData,
+  //         // });
   
-          // const data = await response.json();
-          const data = { url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' };
-          resolve(data.url); // The URL of the uploaded file
-        } catch (error) {
-          reject(error);
-        }
-      };
+  //         // const data = await response.json();
+  //         const data = { url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' };
+  //         resolve(data.url); // The URL of the uploaded file
+  //       } catch (error) {
+  //         reject(error);
+  //       }
+  //     };
   
-      input.click();
-    });
-  };
+  //     input.click();
+  //   });
+  // };
 
   // TODO: figure out if document should be passed in here or not
-  const handleNewConversation = (document?: Document) => {
+  const handleNewConversation = (document?: Document | null) => {
     // const documentUrl = await handleDocumentUpload();
     const lastConversation = conversations[conversations.length - 1];
 
@@ -370,7 +370,7 @@ const Home = ({
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
       dispatch({ field: 'showPromptbar', value: false });
-      // dispatch({ field: 'showDocumentbar', value: false });
+      dispatch({ field: 'showDocumentbar', value: false });
     }
 
     const showChatbar = localStorage.getItem('showChatbar');
@@ -383,10 +383,10 @@ const Home = ({
       dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
     }
 
-    // const showDocumentbar = localStorage.getItem('showDocumentbar');
-    // if (showDocumentbar) {
-    //   dispatch({ field: 'showDocumentbar', value: showDocumentbar === 'true' });
-    // }
+    const showDocumentbar = localStorage.getItem('showDocumentbar');
+    if (showDocumentbar) {
+      dispatch({ field: 'showDocumentbar', value: showDocumentbar === 'true' });
+    }
 
     const folders = localStorage.getItem('folders');
     if (folders) {
@@ -399,10 +399,10 @@ const Home = ({
     }
 
     // fetch from mongo
-    // const documents = localStorage.getItem('documents');
-    // if (documents) {
-    //   dispatch({ field: 'documents', value: JSON.parse(documents) });
-    // }
+    const documents = localStorage.getItem('documents');
+    if (documents) {
+      dispatch({ field: 'documents', value: JSON.parse(documents) });
+    }
 
     const conversationHistory = localStorage.getItem('conversationHistory');
     if (conversationHistory) {

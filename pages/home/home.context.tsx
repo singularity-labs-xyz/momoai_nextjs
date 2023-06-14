@@ -12,7 +12,7 @@ import { HomeInitialState } from './home.state';
 export interface HomeContextProps {
   state: HomeInitialState;
   dispatch: Dispatch<ActionType<HomeInitialState>>;
-  handleNewConversation: (document: Document | null) => void;
+  handleNewConversation: (document?: Document | null) => void;
   handleCreateFolder: (name: string, type: FolderType, parentFolderId?: string) => void;
   handleDeleteFolder: (folderId: string) => void;
   handleUpdateFolder: (folderId: string, name: string) => void;
