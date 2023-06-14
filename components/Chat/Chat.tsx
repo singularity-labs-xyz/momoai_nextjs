@@ -116,6 +116,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           });
         }
         const controller = new AbortController();
+        // BRENDAN: ADD API/CHAIN/LLM
         const messages = updatedConversation.messages
         console.log(selectedConversation.documentId)
         body = JSON.stringify({
@@ -124,7 +125,7 @@ export const Chat = memo(({ stopConversationRef }: Props) => {
           "message": messages[messages.length - 1].content
         })
         console.log(messages)
-        const response = await fetch("/api/chain/cr", {
+        const response = await fetch("/api/chains/cr", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -36,7 +36,7 @@ export const ChatbarSettings = () => {
     handleApiKeyChange,
   } = useContext(ChatbarContext);
   return (
-    <div className="flex flex-col items-center space-y-1 border-t border-light-border dark:border-dark-border pt-1 text-sm text-red-500">
+    <div className="flex flex-col items-center space-y-1 border-t border-white/20 pt-1 text-sm">
       {conversations.length > 0 ? (
         <ClearConversations onClearConversations={handleClearConversations} />
       ) : null}

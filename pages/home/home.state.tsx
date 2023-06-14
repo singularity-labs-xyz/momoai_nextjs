@@ -25,7 +25,7 @@ export interface HomeInitialState {
   temperature: number;
   showChatbar: boolean;
   showPromptbar: boolean;
-  showDocumentbar: boolean;
+  // showDocumentbar: boolean;
   currentFolder: FolderInterface | undefined;
   messageError: boolean;
   searchTerm: string;
@@ -52,7 +52,7 @@ export const initialState: HomeInitialState = {
   temperature: 1,
   showPromptbar: true,
   showChatbar: true,
-  showDocumentbar: true,
+  // showDocumentbar: true,
   currentFolder: undefined,
   messageError: false,
   searchTerm: '',
