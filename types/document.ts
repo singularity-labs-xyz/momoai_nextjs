@@ -7,4 +7,5 @@ export interface Document {
   description: string;
   content: string;
   folderId: string | null;
+  conversations: Conversation[];
 }

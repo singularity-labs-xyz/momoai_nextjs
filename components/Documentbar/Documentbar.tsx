@@ -31,6 +31,7 @@ const Documentbar = () => {
     state: { documents, defaultModelId, showDocumentbar },
     dispatch: homeDispatch,
     handleCreateFolder,
+    handleNewConversation
   } = useContext(HomeContext);
 
   const {
@@ -45,7 +46,6 @@ const Documentbar = () => {
 
   const handleCreateDocument = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] as File | undefined;
-    console.log(file)
     if(file) {
       const formData = new FormData();
       // HARD CODED USER ID
@@ -54,39 +54,47 @@ const Documentbar = () => {
       formData.append('file', file);
       formData.append('user_id', user_id);
       formData.append('document_id', document_id);
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/documents/upload`, {
+            method: 'POST',
+            body: formData
+          });
 
-      // TODO: figure out why routing through api doesnt work (currently hits backend directly)
-      const response = await fetch(`http://127.0.0.1:8000/documents/upload`, {
-          method: 'POST',
-          body: formData
-        });
+        if (response.ok) {
+          const responseData = await response.json();
 
-      if (response.ok) {
-        const responseData = await response.json();
-        const newDocument: Document = {
-          id: document_id,
-          name: file.name,
-          description: '',
-          content: responseData.url,
-          folderId: null,
-        };
-        
-        const updatedDocuments = [...documents, newDocument];
-    
-        homeDispatch({ field: 'documents', value: updatedDocuments });
-    
-        saveDocuments(updatedDocuments);
-        console.log('File uploaded successfully!');
-      } else {
-        console.error('Error uploading file:', response.statusText);
+          let conversations = []
+          let newConversation = await handleNewConversation("Question/Answer", document_id)
+          conversations.push(newConversation);
+          console.log(conversations)
+          newConversation = await handleNewConversation( "Summarization", document_id);
+          conversations.push(newConversation);
+          console.log(conversations)
+          newConversation = await handleNewConversation("Exam Prep", document_id);
+          conversations.push(newConversation);
+          console.log(conversations)
+
+          const newDocument: Document = {
+            id: document_id,
+            name: file.name,
+            description: '',
+            content: responseData.url,
+            folderId: null,
+            conversations: conversations
+          };
+          
+          const updatedDocuments = [...documents, newDocument];
+      
+          homeDispatch({ field: 'documents', value: updatedDocuments });
+      
+          saveDocuments(updatedDocuments);
+          console.log('File uploaded successfully!');
+        } else {
+          console.error('Error uploading file:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
       }
-
-      //   } else {
-      //     console.error('Error uploading file:', response.statusText);
-      //   }
-      // } catch (error) {
-      //   console.error('Error uploading file:', error);
-      // }
     }
   };
 

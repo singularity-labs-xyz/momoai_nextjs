@@ -73,11 +73,16 @@ function currentDate() {
 
 export const exportData = () => {
   let history = localStorage.getItem('conversationHistory');
+  let documents = localStorage.getItem('documents');
   let folders = localStorage.getItem('folders');
   let prompts = localStorage.getItem('prompts');
 
   if (history) {
     history = JSON.parse(history);
+  }
+
+  if (documents) {
+    documents = JSON.parse(documents);
   }
 
   if (folders) {
@@ -91,6 +96,7 @@ export const exportData = () => {
   const data = {
     version: 4,
     history: history || [],
+    documents: documents || [],
     folders: folders || [],
     prompts: prompts || [],
   } as LatestExportFormat;

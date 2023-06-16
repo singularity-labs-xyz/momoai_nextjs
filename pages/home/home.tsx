@@ -252,13 +252,14 @@ const Home = ({
   // };
 
   // TODO: figure out if document should be passed in here or not
-  const handleNewConversation = (document?: Document | null) => {
-    // const documentUrl = await handleDocumentUpload();
+  const handleNewConversation = async (name: string | null, documentId: string | null) => {
     const lastConversation = conversations[conversations.length - 1];
 
+    const conversationId = uuidv4()
+
     const newConversation: Conversation = {
-      id: uuidv4(),
-      name: t('New Conversation'),
+      id: conversationId,
+      name: name || t('New Conversation'),
       messages: [],
       model: lastConversation?.model || {
         id: OpenAIModels[defaultModelId].id,
@@ -269,7 +270,7 @@ const Home = ({
       prompt: DEFAULT_SYSTEM_PROMPT,
       temperature: lastConversation?.temperature ?? DEFAULT_TEMPERATURE,
       folderId: null,
-      documentId: document?.id || null,
+      documentId: documentId || null,
     };
 
     const updatedConversations = [...conversations, newConversation];
@@ -279,8 +280,11 @@ const Home = ({
 
     saveConversation(newConversation);
     saveConversations(updatedConversations);
+    console.log("saved conversation", newConversation)
 
     dispatch({ field: 'loading', value: false });
+
+    return newConversation;
   };
 
   const handleUpdateConversation = (
@@ -306,9 +310,6 @@ const Home = ({
   const handleSelectDocument = (document: Document) => {
     // TODO: finalize logic for creating new conversations from documents
     // TODO: Figure out loading while embeddings are being generated
-    console.log(document)
-    handleNewConversation(document);
-    console.log(selectedConversation)
     dispatch({
       field: 'selectedDocument',
       value: document,
@@ -478,7 +479,7 @@ const Home = ({
           <div className="fixed top-0 w-full sm:hidden">
             <Navbar
               selectedConversation={selectedConversation}
-              onNewConversation={handleNewConversation}
+              onNewConversation={() => {handleNewConversation(null, null)}}
             />
           </div>
 
@@ -494,8 +495,7 @@ const Home = ({
               <DocumentViewer/>
               <Chat stopConversationRef={stopConversationRef} />
             </div>
-
-            <Promptbar />
+            <Chatbar />
           </div>
         </main>
       )}

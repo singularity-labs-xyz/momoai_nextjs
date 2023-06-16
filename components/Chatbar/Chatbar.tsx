@@ -187,6 +187,7 @@ export const Chatbar = () => {
   };
 
   useEffect(() => {
+    console.log('conversations', conversations);
     if (searchTerm) {
       chatDispatch({
         field: 'filteredConversations',

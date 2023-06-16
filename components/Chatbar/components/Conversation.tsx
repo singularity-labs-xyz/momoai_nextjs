@@ -41,7 +41,7 @@ export const ConversationComponent = ({ conversation }: Props) => {
   const handleEnterDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      selectedConversation && handleRename(selectedConversation);
+      //selectedConversation && handleRename(selectedConversation);
     }
   };
 
