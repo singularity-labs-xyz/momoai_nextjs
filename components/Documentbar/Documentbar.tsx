@@ -64,13 +64,13 @@ const Documentbar = () => {
           const responseData = await response.json();
 
           let conversations = []
-          let newConversation = await handleNewConversation("Question/Answer", document_id)
+          let newConversation = handleNewConversation("Question/Answer", document_id)
           conversations.push(newConversation);
           console.log(conversations)
-          newConversation = await handleNewConversation( "Summarization", document_id);
+          newConversation = handleNewConversation( "Summarization", document_id);
           conversations.push(newConversation);
           console.log(conversations)
-          newConversation = await handleNewConversation("Exam Prep", document_id);
+          newConversation = handleNewConversation("Exam Prep", document_id);
           conversations.push(newConversation);
           console.log(conversations)
 

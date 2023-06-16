@@ -36,7 +36,6 @@ import { Document } from '@/types/document';
 import { Chat } from '@/components/Chat/Chat';
 import { Chatbar } from '@/components/Chatbar/Chatbar';
 import { Navbar } from '@/components/Mobile/Navbar';
-import Promptbar from '@/components/Promptbar';
 import Documentbar from '@/components/Documentbar';
 
 import HomeContext from './home.context';
@@ -67,13 +66,11 @@ const Home = ({
 
   const {
     state: {
-      apiKey,
       lightMode,
       folders,
       conversations,
       selectedConversation,
       selectedDocument,
-      prompts,
       documents,
       temperature,
     },
@@ -81,29 +78,6 @@ const Home = ({
   } = contextValue;
 
   const stopConversationRef = useRef<boolean>(false);
-
-  const { data, error, refetch } = useQuery(
-    ['GetModels', apiKey, serverSideApiKeyIsSet],
-    ({ signal }) => {
-      if (!apiKey && !serverSideApiKeyIsSet) return null;
-
-      return getModels(
-        {
-          key: apiKey,
-        },
-        signal,
-      );
-    },
-    { enabled: true, refetchOnMount: false },
-  );
-
-  useEffect(() => {
-    if (data) dispatch({ field: 'models', value: data });
-  }, [data, dispatch]);
-
-  useEffect(() => {
-    dispatch({ field: 'modelError', value: getModelsError(error) });
-  }, [dispatch, error, getModelsError]);
 
   // FETCH MODELS ----------------------------------------------
 
@@ -197,7 +171,7 @@ const Home = ({
     }
 
     updateItems(conversations, saveConversations);
-    updateItems(prompts, savePrompts);
+    //updateItems(prompts, savePrompts);
     updateItems(documents, saveDocuments);
   };
 
@@ -252,7 +226,7 @@ const Home = ({
   // };
 
   // TODO: figure out if document should be passed in here or not
-  const handleNewConversation = async (name: string | null, documentId: string | null) => {
+  const handleNewConversation = (name: string | null, documentId: string | null) => {
     const lastConversation = conversations[conversations.length - 1];
 
     const conversationId = uuidv4()
@@ -327,17 +301,7 @@ const Home = ({
   useEffect(() => {
     defaultModelId &&
       dispatch({ field: 'defaultModelId', value: defaultModelId });
-    serverSideApiKeyIsSet &&
-      dispatch({
-        field: 'serverSideApiKeyIsSet',
-        value: serverSideApiKeyIsSet,
-      });
-    serverSidePluginKeysSet &&
-      dispatch({
-        field: 'serverSidePluginKeysSet',
-        value: serverSidePluginKeysSet,
-      });
-  }, [defaultModelId, serverSideApiKeyIsSet, serverSidePluginKeysSet]);
+  }, [defaultModelId]);
 
   // ON LOAD --------------------------------------------
 
@@ -350,38 +314,14 @@ const Home = ({
       });
     }
 
-    const apiKey = localStorage.getItem('apiKey');
-
-    if (serverSideApiKeyIsSet) {
-      dispatch({ field: 'apiKey', value: '' });
-
-      localStorage.removeItem('apiKey');
-    } else if (apiKey) {
-      dispatch({ field: 'apiKey', value: apiKey });
-    }
-
-    const pluginKeys = localStorage.getItem('pluginKeys');
-    if (serverSidePluginKeysSet) {
-      dispatch({ field: 'pluginKeys', value: [] });
-      localStorage.removeItem('pluginKeys');
-    } else if (pluginKeys) {
-      dispatch({ field: 'pluginKeys', value: pluginKeys });
-    }
-
     if (window.innerWidth < 640) {
       dispatch({ field: 'showChatbar', value: false });
-      dispatch({ field: 'showPromptbar', value: false });
       dispatch({ field: 'showDocumentbar', value: false });
     }
 
     const showChatbar = localStorage.getItem('showChatbar');
     if (showChatbar) {
       dispatch({ field: 'showChatbar', value: showChatbar === 'true' });
-    }
-
-    const showPromptbar = localStorage.getItem('showPromptbar');
-    if (showPromptbar) {
-      dispatch({ field: 'showPromptbar', value: showPromptbar === 'true' });
     }
 
     const showDocumentbar = localStorage.getItem('showDocumentbar');
@@ -392,11 +332,6 @@ const Home = ({
     const folders = localStorage.getItem('folders');
     if (folders) {
       dispatch({ field: 'folders', value: JSON.parse(folders) });
-    }
-
-    const prompts = localStorage.getItem('prompts');
-    if (prompts) {
-      dispatch({ field: 'prompts', value: JSON.parse(prompts) });
     }
 
     // fetch from mongo
@@ -485,12 +420,6 @@ const Home = ({
 
           <div className="flex h-full w-full pt-[48px] sm:pt-0">
             <Documentbar/>
-            {/* <Chatbar />
-
-            {selectedConversation.documentUrl && (
-              <iframe src={selectedConversation.documentUrl} width="40%" height="100%" />
-            )} */}
-
             <div className="flex flex-1 flex-row">
               <DocumentViewer/>
               <Chat stopConversationRef={stopConversationRef} />

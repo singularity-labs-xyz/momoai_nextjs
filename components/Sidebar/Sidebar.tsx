@@ -8,6 +8,7 @@ import {
 } from './components/OpenCloseButton';
 
 import Search from '../Search';
+import { Conversation } from '@/types/chat';
 
 interface Props<T> {
   isOpen: boolean;
